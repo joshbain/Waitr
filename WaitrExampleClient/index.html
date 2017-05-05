@@ -1,0 +1,168 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Waitr Example Client</title>
+
+    <script src="Scripts/jquery-3.1.1.min.js"></script>
+    
+    <link href="Content/bootstrap.min.css" rel="stylesheet" />
+    <script src="Scripts/bootstrap.min.js"></script>    
+
+    <link href="Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="Scripts/jquery-ui-1.12.1.min.js"></script>
+
+    <script src="Scripts/knockout-3.4.2.js"></script>
+
+    <script src="Scripts/jquery.cookie-1.4.1.min.js"></script>
+
+    <link href="Content/font-awesome.min.css" rel="stylesheet" />
+    
+    <link href="Scripts/dropzone/dropzone.min.css" rel="stylesheet" />
+    <script src="Scripts/dropzone/dropzone.min.js"></script>
+
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+    <script src="Scripts/App.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Arsenal" rel="stylesheet" />
+    
+    <style>
+        body {
+            font-family: 'Arsenal' !important;
+            /*font-size: 120% !important;*/
+        }
+    </style>  
+</head>
+<body id="mainBody">
+    <!--When selecting which mode-->
+    <div data-bind="visible: appMode() == 'mode'" style="width: 500px; left: calc(50% - 250px); position: absolute;">        
+        <H1>Select Mode</H1>
+        <hr />
+        <button data-bind="click: function () { selectMode ('newDriver'); }" type="button" class="btn btn-success" style="width:32%;">Driver</button>
+        <button data-bind="click: function () { selectMode ('dashboard'); }" type="button" class="btn btn-info" style="width:32%;">Dashboard</button>
+        <button data-bind="click: function () { window.location.href='http://waitrapp.com'; }"type="button" class="btn btn-danger" style="width:32%;">Cancel</button>        
+    </div>
+    <!--When the user is creating a new driver-->
+    <div data-bind="visible: appMode() == 'newDriver'" style="width: 500px; left: calc(50% - 250px); position: absolute;">
+        <H1>Driver</H1>
+        <H2>New Driver</H2>
+        <hr />
+        <div class="form-group">            
+        <label for="printTitle">Name</label>
+        <input placeholder="John Smith" data-bind="textInput: name" class="form-control" type="text">
+        <div style="width: 49%; display: inline-block; margin-right: 2%;">                
+        <label for="Latitude">Latitude</label>
+        <input placeholder="30.206285599999998" data-bind="textInput: latitude" class="form-control" type="text">
+        </div>
+        <div style="width: 49%; display: inline-block;">
+        <label for="Longitude">Longitude</label>
+        <input placeholder="-92.05971260000001" data-bind="textInput: longitude" class="form-control" type="text">
+        </div>
+        </div>
+        <div class="checkbox text-center"><label><input data-bind="value: track" type="checkbox" value="">Update my location continuously while app open.</label></div>
+        <button data-bind="click: createNewDriver" type="button" class="btn btn-success" style="width:49%;">Submit</button>
+        <button data-bind="click: function () { selectMode ('mode'); }" type="button" class="btn btn-danger" style="width:49%;">Cancel</button>        
+    </div>
+    <!--When the user is logged in as a driver and reciving recomendations-->
+    <div data-bind="visible: appMode() == 'driving'" style="width: 500px; left: calc(50% - 250px); position: absolute;">
+        <H1>Driver</H1>
+        <H2 data-bind="text: name"></H2>
+        <hr />
+        <!--<button data-bind="click: function () { selectMode ('newDriver'); }" type="button" class="btn btn-success" style="width:32%;">Driver</button>
+        <button type="button" class="btn btn-info" style="width:32%;">Dashboard</button>
+        <button data-bind="click: function () { window.location.href='http://waitrapp.com'; }" type="button" class="btn btn-danger" style="width:32%;">Cancel</button>-->
+    </div>
+    <!--When the user is logged in to review-->
+    <div data-bind="visible: appMode() == 'dashboard'" style="width: 800px; left: calc(50% - 400px); position: absolute;">        
+        <H1>Dashboard <!--<button data-bind="click: function () { selectMode ('mode'); }" type="button" class="btn btn-danger">Exit</button>--></H1>
+        <hr />
+        <ul class="nav nav-pills">
+            <li class="active"><a data-toggle="pill" href="#overview">Overview</a></li>
+            <li><a data-toggle="pill" href="#drivers">Drivers</a></li>
+            <li><a data-toggle="pill" href="#deliveries">Deliveries</a></li>            
+            <li><a data-toggle="pill" href="#uploads">Test Data</a></li>    
+        </ul>
+
+        <div class="tab-content">
+            <div id="overview" class="tab-pane fade in active">
+                <div id="chart_div" style="width: 150px; height: 150px; float: right;"></div>
+                <h2>Overview</h2>
+                <table style="width: calc(100% - 150px); font-size: large;">
+                    <tr>
+                        <td><b>Deliveries:</b> <span data-bind="text: deliveries().length"></span></td>
+                        <td><b>Drivers:</b> <span data-bind="text: drivers().length"></span></td>                             
+                    </tr>
+                    <tr>                        
+                        <td colspan="2"><b>Deliveries Meeting Win Condition:</b> <span data-bind="text: deliveries().length - exceptions().length"></span></td>                        
+                    </tr>
+                    <tr>                                                
+                        <td colspan="2"><b>Deliveries Not Meeting Win Condition:</b> <span data-bind="text: exceptions().length"></span></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><b>Possible Delivery Permutations Examined:</b> <span data-bind="text: possibleDeliveries().length"></span></td>
+                    </tr>
+                </table>                                
+                <hr/>
+                <h3>Exceptions</h3>
+                <table class="table table-condensed table-hover">
+                    <thead>
+                        <tr><th>Id</th><th>Exception Type</th><th>Explaination</th></tr>
+                    </thead>
+                    <tbody data-bind="foreach: exceptions" >
+                        <tr><td data-bind="text: id"></td><td data-bind="text: type"></td><td data-bind="text: explaination"></td></tr>                        
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="drivers" class="tab-pane fade">
+                <h3>DRIVERS</h3>
+                <table class="table table-condensed table-hover">
+                    <thead>
+                        <tr><th>Name</th><th>Id</th><th>Current Location</th><th>Top Recomanded Delivery</th></tr>
+                    </thead>
+                    <tbody data-bind="foreach: drivers">
+                        <tr><td data-bind="text: name"></td><td data-bind="text: id"></td><td data-bind="text: current_location.latitude+' by '+current_location.longitude"></td><td data-bind="text: deliveryId"></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div id="deliveries" class="tab-pane fade">
+                <h3>DELIVERIES</h3>     
+                <table class="table table-condensed table-hover">
+                    <thead>
+                        <tr><th>Id</th><th>Due By</th><th>Driver Recomended</th><th>Exception</th></tr>
+                    </thead>
+                    <tbody data-bind="foreach: deliveries">
+                        <tr data-bind="style: { 'background-color': exception != 'none' ? 'LightCoral' :  driverId == 'none' ? 'LemonChiffon' : 'LightGreen' }" ><td data-bind="text: id"></td><td data-bind="text: dueBy"></td><td data-bind="text: driverId" ></td><td data-bind="text: exception"></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div id="uploads" class="tab-pane fade">
+                <H2>Bulk Data Upload</H2>
+                <button data-bind="click: deleteDatabase" type="button" class="btn btn-warning">Clear Database</button>
+                <!--<div class="checkbox text-center"><label><input data-bind="value: track" type="checkbox" value="">Automatically simulate drivers accepting first recomendation.</label></div>
+                <div class="checkbox text-center"><label><input data-bind="value: track" type="checkbox" value="">Update my location continuously while app open.</label></div>
+                <div class="checkbox text-center"><label><input data-bind="value: track" type="checkbox" value="">Update my location continuously while app open.</label></div>-->
+                <div class="form-group">
+                    <H3>Import Bulk Drivers For Testing (Drag .json files here)</H3>
+                    <form action="/file-upload" class="dropzone" id="my-awesome-dropzone"></form>
+                    <div class="btn-group btn-block">
+                        <button data-bind="click: processDrivers" type="button" class="btn btn-success" style="width:50%;">Submit</button>
+                        <button data-bind="click: clearDrivers" type="button" class="btn btn-danger" style="width:50%;">Clear</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <H3>Import Bulk Deliveries For Testing (Drag .json files here)</H3>
+                    <form action="/file-upload" class="dropzone" id="my-awesome-dropzone2"></form>
+                    <div class="btn-group btn-block">
+                        <button data-bind="click: processDeliveries" type="button" class="btn btn-success" style="width:50%;">Submit</button>
+                        <button data-bind="click: clearDeliveries" type="button" class="btn btn-danger" style="width:50%;">Clear</button>
+                    </div>
+                </div>
+            </div>
+            </div>
+
+        <!--<button data-bind="click: function () { selectMode ('mode'); }" type="button" class="btn btn-danger" style="width:100%;">Exit Dashboard</button>-->     
+    </div>
+</body>
+</html>

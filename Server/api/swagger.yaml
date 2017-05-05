@@ -1,0 +1,351 @@
+---
+swagger: "2.0"
+info:
+  description: "Delivery Recommendation Service"
+  version: "1.0.0"
+  title: "WAITR Sample Service"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "<HOSTNAME>:8013"
+schemes:
+- "http"
+paths:
+  /deliveries/RecomendationsRatio:  
+    options:
+      tags:
+      - "Deliveries"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      responses:
+        200:
+          description: "Preflight for details of the success ratio."
+        405:
+          description: "Invalid body."
+      x-swagger-router-controller: "Deliveries"
+    get:	
+      tags:
+      - "Deliveries"
+      operationId: "getDeliveriesRecomendationsRatio"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      responses:
+        200:
+          description: "Details of the success ratio."
+        405:
+          description: "Invalid body."
+      x-swagger-router-controller: "Deliveries"
+  /deliveries/possible:  
+    options:
+      tags:
+      - "Deliveries"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      responses:
+        200:
+          description: "Preflight for all possible deliveries."
+        405:
+          description: "Invalid body."
+      x-swagger-router-controller: "Deliveries"
+    get:
+      tags:
+      - "Deliveries"
+      operationId: "getPossibleDeliveries"
+      responses:
+        200:
+          description: "All possible deliveries."
+          schema:
+            $ref: "#/definitions/DeliveryList"
+        405:
+          description: "Invalid body."
+      x-swagger-router-controller: "Deliveries"
+  /deliveries:  
+    options:
+      tags:
+      - "Deliveries"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      responses:
+        200:
+          description: "Preflight for get all deliveries."
+        405:
+          description: "Invalid body."
+      x-swagger-router-controller: "Deliveries"
+    get:
+      tags:
+      - "Deliveries"
+      operationId: "getDeliveries"
+      responses:
+        200:
+          description: "Get all deliveries."
+          schema:
+            $ref: "#/definitions/DeliveryList"
+        404:
+          description: "The driver does not exist."
+      x-swagger-router-controller: "Deliveries"
+  /deliveries/clear:  
+    options:
+      tags:
+      - "Deliveries"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      responses:
+        200:
+          description: "Preflight clear all deliveries from the database."
+        405:
+          description: "Invalid body."
+      x-swagger-router-controller: "Deliveries"
+    get:
+      tags:
+      - "Deliveries"
+      operationId: "clearDeliveries"
+      responses:
+        200:
+          description: "Clear all deliveries from the database."
+        404:
+          description: "The driver does not exist."
+      x-swagger-router-controller: "Deliveries"
+  /deliveries/add:  
+    options:
+      tags:
+      - "Deliveries"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      responses:
+        200:
+          description: "Preflight for add new deliveries."
+        405:
+          description: "Invalid body."
+      x-swagger-router-controller: "Deliveries"
+    post:
+      tags:
+      - "Deliveries"
+      operationId: "addDeliveries"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/DeliveryList"
+      responses:
+        200:
+          description: "Add new deliveries."
+        405:
+          description: "Invalid body."
+      x-swagger-router-controller: "Deliveries"
+  /drivers/clear:  
+    options:
+      tags:
+      - "Drivers"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      responses:
+        200:
+          description: "Preflight for clear all drivers."
+        405:
+          description: "Invalid body."
+      x-swagger-router-controller: "Drivers"
+    get:
+      tags:
+      - "Drivers"
+      operationId: "clearDrivers"
+      responses:
+        200:
+          description: "Clear all drivers"
+        404:
+          description: "The driver does not exist."
+      x-swagger-router-controller: "Drivers"
+  /drivers:  
+    options:
+      tags:
+      - "Drivers"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      responses:
+        200:
+          description: "Preflight for get all drivers."
+        405:
+          description: "Invalid body."
+      x-swagger-router-controller: "Drivers"
+    get:
+      tags:
+      - "Drivers"
+      operationId: "getDrivers"
+      responses:
+        200:
+          description: "Get all drivers."
+          schema:
+            $ref: "#/definitions/DriverList"
+        404:
+          description: "The driver does not exist."
+      x-swagger-router-controller: "Drivers"
+  /drivers/{driverId}:  
+    get:
+      tags:
+      - "Drivers"
+      operationId: "getDriver"
+      parameters:
+      - name: "driverId"
+        in: "path"
+        description: "A driver id."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Get a driver."
+          schema:
+            $ref: "#/definitions/Driver"
+        404:
+          description: "The driver does not exist."
+      x-swagger-router-controller: "Drivers"
+  /drivers/{driverId}/updateLocation:  
+    put:
+      tags:
+      - "Drivers"
+      operationId: "updateLocation"
+      parameters:
+        - name: latitude
+          in: query
+          description: Latitude component of location.
+          required: true
+          type: number
+        - name: longitude
+          in: query
+          description: Longitude component of location.
+          required: true
+          type: number
+        - name: driverId
+          in: path
+          description: id of the driver to be updated.
+          required: true
+          type: number
+      responses:
+        200:
+          description: "Driver's location updated."
+        404:
+          description: "The driver does not exist."
+      x-swagger-router-controller: "Drivers"
+  /drivers/add:  
+    options:
+      tags:
+      - "Drivers"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      responses:
+        200:
+          description: "Preflight for add a driver."
+        405:
+          description: "Invalid body."
+      x-swagger-router-controller: "Drivers"
+    post:
+      tags:
+      - "Drivers"
+      operationId: "addDriver"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/NewDriverList"
+      responses:
+        200:
+          description: "Add a driver."
+          schema:
+            $ref: "#/definitions/AddedDriver"
+        405:
+          description: "Invalid body."
+      x-swagger-router-controller: "Drivers"
+  /drivers/{driverId}/recommendations:
+    get:
+      tags:
+      - "Drivers"
+      operationId: "getDriverRecommendations"
+      parameters:
+      - name: "driverId"
+        in: "path"
+        description: "A driver id."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "A list of recommended deliveries for a driver to make."
+          schema:
+            $ref: "#/definitions/DeliveryList"
+        404:
+          description: "The driver does not exist."
+      x-swagger-router-controller: "Drivers"
+definitions:
+  NewDriverList:
+    type: "array"
+    items:
+      $ref: "#/definitions/NewDriver"  
+  NewDriver:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      current_location:
+        $ref: "#/definitions/Location"
+  DriverList:
+    type: "array"
+    items:
+      $ref: "#/definitions/Driver"
+  AddedDriver:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+  Driver:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      name:
+        type: "string"
+      current_location:
+        $ref: "#/definitions/Location"
+  Location:
+    type: "object"
+    properties:
+      latitude:
+        type: "number"
+        format: "float"
+      longitude:
+        type: "number"
+        format: "float"
+  Delivery:
+    type: "object"
+    properties:
+      deliver_by_timestamp:
+        type: "string"
+        format: "datetime"
+      pickup_location:
+        $ref: "#/definitions/Location"
+      dropoff_location:
+        $ref: "#/definitions/Location"
+  DeliveryList:
+    type: "array"
+    items:
+      $ref: "#/definitions/Delivery"
+parameters:
+  driverId:
+    name: "driverId"
+    in: "path"
+    description: "A driver id."
+    required: true
+    type: "string"
